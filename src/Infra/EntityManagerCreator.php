@@ -1,6 +1,6 @@
 <?php
 
-namespace Alura\Cursos\Infra;
+namespace Caio\MVC\Infra;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;

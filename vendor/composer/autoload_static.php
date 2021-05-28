@@ -49,9 +49,9 @@ class ComposerStaticInitc92bc296ad37be635d387c06a12f581e
             'Doctrine\\Common\\Annotations\\' => 28,
             'Doctrine\\Common\\' => 16,
         ),
-        'A' => 
+        'C' => 
         array (
-            'Alura\\Cursos\\' => 13,
+            'Caio\\MVC\\' => 9,
         ),
     );
 
@@ -150,7 +150,7 @@ class ComposerStaticInitc92bc296ad37be635d387c06a12f581e
             1 => __DIR__ . '/..' . '/doctrine/event-manager/lib/Doctrine/Common',
             2 => __DIR__ . '/..' . '/doctrine/persistence/lib/Doctrine/Common',
         ),
-        'Alura\\Cursos\\' => 
+        'Caio\\MVC\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),

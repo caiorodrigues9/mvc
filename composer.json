@@ -1,7 +1,7 @@
 {
     "autoload": {
         "psr-4": {
-            "Alura\\Cursos\\": "src/"
+            "Caio\\MVC\\": "src/"
         }
     },
     "require": {
