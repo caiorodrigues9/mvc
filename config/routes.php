@@ -3,9 +3,11 @@
 use Caio\MVC\Controller\{
     Exclusao,
     FormularioEdicao,
-    FormularioInsercao, 
+    FormularioInsercao,
+    FormularioLogin,
     ListarCursos,
-    Persistencia
+    Persistencia,
+    RealizarLogin
 };
 
 
@@ -14,5 +16,7 @@ return [
     '/novo-curso' => FormularioInsercao::class,
     '/salvar-curso' => Persistencia::class,
     '/excluir-curso' => Exclusao::class,
-    '/atualizar-curso' => FormularioEdicao::class
+    '/atualizar-curso' => FormularioEdicao::class,
+    '/login' => FormularioLogin::class,
+    '/realiza-login' => RealizarLogin::class
 ];
