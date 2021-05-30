@@ -1,6 +1,7 @@
 <?php
 
 use Caio\MVC\Controller\{
+    Deslogar,
     Exclusao,
     FormularioEdicao,
     FormularioInsercao,
@@ -18,5 +19,6 @@ return [
     '/excluir-curso' => Exclusao::class,
     '/atualizar-curso' => FormularioEdicao::class,
     '/login' => FormularioLogin::class,
-    '/realiza-login' => RealizarLogin::class
+    '/realiza-login' => RealizarLogin::class,
+    '/logout' => Deslogar::class,
 ];

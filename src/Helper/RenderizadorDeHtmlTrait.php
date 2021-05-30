@@ -1,15 +1,20 @@
 <?php
 
-namespace Caio\MVC\Controller;
 
-abstract class ControllerComHtml
+namespace Caio\MVC\Helper;
+
+
+trait RenderizadorDeHtmlTrait
 {
     public function renderizaHtml(string $caminhoTemplate, array $dados): string
     {
         extract($dados);
         ob_start();
-        require __DIR__.'/../../view/'.$caminhoTemplate;
+
+        require __DIR__ . '/../../view/' . $caminhoTemplate;
         $html = ob_get_clean();
+
         return $html;
     }
+
 }

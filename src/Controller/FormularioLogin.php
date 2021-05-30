@@ -2,8 +2,12 @@
 
 namespace Caio\MVC\Controller;
 
-class FormularioLogin extends ControllerComHtml implements InterfaceControladorRequisicao
+use Caio\MVC\Helper\RenderizadorDeHtmlTrait;
+
+class FormularioLogin implements InterfaceControladorRequisicao
 {
+    use RenderizadorDeHtmlTrait;
+
     public function processaRequisicao(): void
     {
         echo $this->renderizaHtml('login/formulario.php',[

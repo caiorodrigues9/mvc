@@ -3,10 +3,13 @@
 namespace Caio\MVC\Controller;
 
 use Caio\MVC\Entity\Curso;
+use Caio\MVC\Helper\RenderizadorDeHtmlTrait;
 use Caio\MVC\Infra\EntityManagerCreator;
 
-class ListarCursos extends ControllerComHtml implements InterfaceControladorRequisicao
+class ListarCursos implements InterfaceControladorRequisicao
 {
+    use RenderizadorDeHtmlTrait;
+    
     private $repositorioDeCursos;
 
     public function __construct()

@@ -3,12 +3,14 @@
 namespace Caio\MVC\Controller;
 
 use Caio\MVC\Entity\Curso;
+use Caio\MVC\Helper\RenderizadorDeHtmlTrait;
 use Caio\MVC\Infra\EntityManagerCreator;
 use Doctrine\Persistence\ObjectRepository;
 
-class FormularioEdicao extends ControllerComHtml implements InterfaceControladorRequisicao
+class FormularioEdicao implements InterfaceControladorRequisicao
 {
     private ObjectRepository $repositoryCurso;
+    use RenderizadorDeHtmlTrait;
 
     public function __construct()
     {
