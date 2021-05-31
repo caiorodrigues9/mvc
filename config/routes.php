@@ -1,6 +1,8 @@
 <?php
 
 use Caio\MVC\Controller\{
+    CursosEmJson,
+    CursosEmXml,
     Deslogar,
     Exclusao,
     FormularioEdicao,
@@ -21,4 +23,6 @@ return [
     '/login' => FormularioLogin::class,
     '/realiza-login' => RealizarLogin::class,
     '/logout' => Deslogar::class,
+    '/buscarCursosEmJson' => CursosEmJson::class,
+    '/buscarCursosEmXml' => CursosEmXml::class,
 ];
