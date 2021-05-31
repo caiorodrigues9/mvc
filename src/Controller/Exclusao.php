@@ -6,30 +6,30 @@ use Caio\MVC\Entity\Curso;
 use Caio\MVC\Helper\FlashMessageTrait;
 use Caio\MVC\Infra\EntityManagerCreator;
 use Doctrine\ORM\EntityManagerInterface;
+use Nyholm\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class Exclusao implements InterfaceControladorRequisicao
+class Exclusao implements RequestHandlerInterface
 {
     use FlashMessageTrait;
 
     private EntityManagerInterface $entityManager;
 
-    public function __construct()
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->entityManager = (new EntityManagerCreator())->getEntityManager();
+        $this->entityManager = $entityManager;
     }
 
-    public function processaRequisicao(): void
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $id = filter_input(
-            INPUT_GET,
-            'id',
-            FILTER_VALIDATE_INT
-        );
+        $queryString = $request->getQueryParams();
+        $id = filter_var($queryString['id'],FILTER_VALIDATE_INT);
 
         if (is_null($id) || $id === false) {
             $this->defineMensagem('danger',"Curso invalido");
-            header('Location: /listar_cursos');
-            return;
+            return new Response(404,['Location'=>'/listar-cursos']);
         }
 
         $curso = $this->entityManager->getReference(Curso::class,$id);
@@ -38,6 +38,6 @@ class Exclusao implements InterfaceControladorRequisicao
 
         $this->defineMensagem('success','Curso Excluído com sucesso');
 
-        header('Location: /listar-cursos', true, 302);
+        return new Response(302,['Location'=>'/listar-cursos']);
     }
 }
