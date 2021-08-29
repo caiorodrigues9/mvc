@@ -4,15 +4,15 @@ namespace Caio\MVC\Controller;
 
 use Caio\MVC\Entity\Formacao;
 
+use Caio\MVC\Helper\FlashMessageTrait;
 use Doctrine\ORM\EntityManagerInterface;
-use Nyholm\Psr7\MessageTrait;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class ExclusaoDeFormacao
 {
-    use MessageTrait;
+    use FlashMessageTrait;
 
     private EntityManagerInterface $entityManager;
 
