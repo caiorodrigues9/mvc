@@ -11,9 +11,12 @@
         "psr/http-message": "^1.0",
         "psr/http-server-handler": "^1.0",
         "php-di/php-di": "^6.3",
-        "symfony/cache": "^5.3"
+        "symfony/cache": "^5.3",
+        "behat/mink-goutte-driver": "^1.2"
     },
     "require-dev": {
-        "behat/behat": "^3.8"
+        "behat/behat": "^3.8",
+        "behat/mink": "^1.8",
+        "behat/mink-extension": "^2.3"
     }
 }
