@@ -12,7 +12,7 @@
     <?php if (isset($_SESSION['logado'])) : ?>
 
         <nav class="navbar navbar-dark bg-dark mb-2">
-            <a class="navbar-brand" href="/listar-cursos">Home</a>
+            <a class="navbar-brand" href="/listar-cursos">Cursos</a>
             <a class="navbar-brand" href="/listar-formacoes">Formações</a>
 
             <ul class="navbar-nav ml-auto">
