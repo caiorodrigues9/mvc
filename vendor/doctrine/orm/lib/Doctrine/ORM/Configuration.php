@@ -26,6 +26,7 @@ use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
+use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Deprecations\Deprecation;
@@ -154,7 +155,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Adds a new default annotation driver with a correctly configured annotation reader. If $useSimpleAnnotationReader
      * is true, the notation `@Entity` will work, otherwise, the notation `@ORM\Entity` will be supported.
      *
-     * @param bool $useSimpleAnnotationReader
+     * @param string|string[] $paths
+     * @param bool            $useSimpleAnnotationReader
      * @psalm-param string|list<string> $paths
      *
      * @return AnnotationDriver
@@ -326,6 +328,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         );
 
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
+        $this->_attributes['metadataCache']     = CacheAdapter::wrap($cacheImpl);
     }
 
     public function getMetadataCache(): ?CacheItemPoolInterface
@@ -335,7 +338,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     public function setMetadataCache(CacheItemPoolInterface $cache): void
     {
-        $this->_attributes['metadataCache'] = $cache;
+        $this->_attributes['metadataCache']     = $cache;
+        $this->_attributes['metadataCacheImpl'] = DoctrineProvider::wrap($cache);
     }
 
     /**
@@ -388,11 +392,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name The name of the query.
      *
-     * @psalm-return array{string, ResultSetMapping} A tuple with the first
-     *                                               element being the SQL
-     *                                               string and the second
-     *                                               element being the
-     *                                               ResultSetMapping.
+     * @return mixed[]
+     * @psalm-return array{string, ResultSetMapping} A tuple with the first element being the SQL string and the second
+     *                                               element being the ResultSetMapping.
      *
      * @throws ORMException
      */
@@ -430,15 +432,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
             throw ORMException::proxyClassesAlwaysRegenerating();
         }
 
-        if ($this->getMetadataCache()) {
-            return;
+        if (! $this->getMetadataCache()) {
+            throw ORMException::metadataCacheNotConfigured();
         }
 
         $metadataCacheImpl = $this->getMetadataCacheImpl();
-
-        if (! $metadataCacheImpl) {
-            throw ORMException::metadataCacheNotConfigured();
-        }
 
         if ($metadataCacheImpl instanceof ArrayCache) {
             throw ORMException::metadataCacheUsesNonPersistentCache($metadataCacheImpl);
@@ -635,7 +633,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Adds a custom hydration mode.
      *
      * @param string $modeName The hydration mode name.
-     * @psalm-param class-string $hydrator The hydrator class name.
+     * @param string $hydrator The hydrator class name.
+     * @psalm-param class-string $hydrator
      *
      * @return void
      */

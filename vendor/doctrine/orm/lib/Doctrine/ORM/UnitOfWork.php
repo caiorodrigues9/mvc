@@ -589,6 +589,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      *
+     * @return mixed[][]
      * @psalm-return array<string, array{mixed, mixed}>
      */
     public function & getEntityChangeSet($entity)
@@ -630,8 +631,12 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param ClassMetadata $class  The class descriptor of the entity.
      * @param object        $entity The entity for which to compute the changes.
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $entity
      *
      * @return void
+     *
+     * @template T of object
      *
      * @ignore
      */
@@ -959,6 +964,10 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * @param object $entity
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $entity
+     *
+     * @template T of object
      */
     private function persistNew(ClassMetadata $class, $entity): void
     {
@@ -1017,11 +1026,14 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param ClassMetadata $class  The class descriptor of the entity.
      * @param object        $entity The entity for which to (re)calculate the change set.
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $entity
      *
      * @return void
      *
      * @throws ORMInvalidArgumentException If the passed entity is not MANAGED.
      *
+     * @template T of object
      * @ignore
      */
     public function recomputeSingleEntityChangeSet(ClassMetadata $class, $entity)
@@ -1144,6 +1156,10 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * @param object $entity
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $entity
+     *
+     * @template T of object
      */
     private function addToEntityIdentifiersAndEntityMap(
         ClassMetadata $class,
@@ -2020,8 +2036,13 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * @param object $entity
      * @param object $managedCopy
+     * @psalm-param ClassMetadata<T> $class
+     * @psalm-param T $entity
+     * @psalm-param T $managedCopy
      *
      * @throws OptimisticLockException
+     *
+     * @template T of object
      */
     private function ensureVersionMatch(
         ClassMetadata $class,
@@ -2622,8 +2643,9 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param string  $className The name of the entity class.
      * @param mixed[] $data      The data for the entity.
+     * @param mixed[] $hints     Any hints to account for during reconstitution/lookup of the entity.
      * @psalm-param class-string $className
-     * @psalm-param array<string, mixed> $hints Any hints to account for during reconstitution/lookup of the entity.
+     * @psalm-param array<string, mixed> $hints
      *
      * @return object The managed entity instance.
      *
@@ -2986,6 +3008,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      *
+     * @return mixed[]
      * @psalm-return array<string, mixed>
      */
     public function getOriginalEntityData($entity)
@@ -3033,12 +3056,15 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      *
-     * @return mixed The identifier values.
+     * @return mixed[] The identifier values.
      */
     public function getEntityIdentifier($entity)
     {
-        return $this->entityIdentifiers[spl_object_hash($entity)]
-            ?? EntityNotFoundException::noIdentifierFound(get_class($entity));
+        if (! isset($this->entityIdentifiers[spl_object_hash($entity)])) {
+            throw EntityNotFoundException::noIdentifierFound(get_class($entity));
+        }
+
+        return $this->entityIdentifiers[spl_object_hash($entity)];
     }
 
     /**

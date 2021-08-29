@@ -81,7 +81,7 @@ use const PHP_VERSION_ID;
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
- * @template T of object
+ * @template-covariant T of object
  * @template-implements ClassMetadata<T>
  */
 class ClassMetadataInfo implements ClassMetadata
@@ -710,6 +710,7 @@ class ClassMetadataInfo implements ClassMetadata
      * metadata of the class with the given name.
      *
      * @param string $entityName The name of the entity class the new instance is used for.
+     * @psalm-param class-string<T> $entityName
      */
     public function __construct($entityName, ?NamingStrategy $namingStrategy = null)
     {
@@ -1313,7 +1314,8 @@ class ClassMetadataInfo implements ClassMetadata
      * @param string $fieldName The field name that represents the association in
      *                          the object model.
      *
-     * @psalm-return array<string, mixed> The mapping.
+     * @return mixed[] The mapping.
+     * @psalm-return array<string, mixed>
      *
      * @throws MappingException
      */
@@ -1387,6 +1389,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $queryName The query name.
      *
+     * @return mixed[]
      * @psalm-return array<string, mixed>
      *
      * @throws MappingException
@@ -1467,10 +1470,6 @@ class ClassMetadataInfo implements ClassMetadata
         $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
         if ($type) {
-            if (! isset($mapping['nullable'])) {
-                $mapping['nullable'] = $type->allowsNull();
-            }
-
             if (
                 ! isset($mapping['type'])
                 && ($type instanceof ReflectionNamedType)
@@ -1524,14 +1523,6 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (! isset($mapping['targetEntity']) && $type instanceof ReflectionNamedType) {
             $mapping['targetEntity'] = $type->getName();
-        }
-
-        if (isset($mapping['joinColumns'])) {
-            foreach ($mapping['joinColumns'] as &$joinColumn) {
-                if ($type->allowsNull() === false) {
-                    $joinColumn['nullable'] = false;
-                }
-            }
         }
 
         return $mapping;
@@ -2962,6 +2953,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $event
      *
+     * @return string[]
      * @psalm-return list<string>
      */
     public function getLifecycleCallbacks($event)
@@ -3049,7 +3041,8 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @see getDiscriminatorColumn()
      *
-     * @psalm-param array<string, mixed> $columnDef
+     * @param mixed[]|null $columnDef
+     * @psalm-param array<string, mixed>|null $columnDef
      *
      * @return void
      *
@@ -3101,6 +3094,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Adds one entry of the discriminator map with a new class and corresponding name.
      *
      * @param string $name
+     * @param string $className
      * @psalm-param class-string $className
      *
      * @return void
@@ -3415,6 +3409,11 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * {@inheritDoc}
      *
+     * @param string $assocName
+     *
+     * @return string
+     * @psalm-return class-string
+     *
      * @throws InvalidArgumentException
      */
     public function getAssociationTargetClass($assocName)
@@ -3441,6 +3440,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param AbstractPlatform $platform
      *
+     * @return string[]
      * @psalm-return list<string>
      */
     public function getQuotedIdentifierColumnNames($platform)
@@ -3543,6 +3543,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * @param string $targetClass
      *
+     * @return mixed[][]
      * @psalm-return array<string, array<string, mixed>>
      */
     public function getAssociationsByTargetClass($targetClass)
@@ -3604,9 +3605,16 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $this->assertFieldNotMapped($mapping['fieldName']);
 
+        if (! isset($mapping['class']) && $this->isTypedProperty($mapping['fieldName'])) {
+            $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
+            if ($type instanceof ReflectionNamedType) {
+                $mapping['class'] = $type->getName();
+            }
+        }
+
         $this->embeddedClasses[$mapping['fieldName']] = [
             'class' => $this->fullyQualifiedClassName($mapping['class']),
-            'columnPrefix' => $mapping['columnPrefix'],
+            'columnPrefix' => $mapping['columnPrefix'] ?? null,
             'declaredField' => $mapping['declaredField'] ?? null,
             'originalField' => $mapping['originalField'] ?? null,
         ];
